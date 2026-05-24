@@ -52,17 +52,33 @@
               <div class="pmeta">
                 <h3>{{ product.name }}</h3>
                 <p>Code: {{ product.code }}</p>
-                <p>UOM: {{ product.uom }} &nbsp; | &nbsp; Price: {{ money(product.price) }}</p>
-              </div>
-              <div class="actions">
-                <div *ngIf="cart[product.id]; else addButton" class="stepper product-stepper">
-                  <button type="button" (click)="changeQty(product.id, -1)">−</button>
-                  <b>{{ cart[product.id] }}</b>
-                  <button type="button" (click)="changeQty(product.id, 1)">+</button>
+                <p><b class="uom-label-blue">{{ getUom(product.id, product.uom) | lowercase }}</b> {{ product.cat }}</p>
+                
+                <div class="uom-grid">
+                  <button type="button" class="uom-pill" [class.is-active]="getUom(product.id, product.uom) === 'KG'" (click)="setUom(product.id, 'KG')">
+                    <span class="uom-icon icon-kg">KG</span> KG
+                  </button>
+                  <button type="button" class="uom-pill" [class.is-active]="getUom(product.id, product.uom) === 'BAG'" (click)="setUom(product.id, 'BAG')">
+                    <span class="uom-icon icon-bag">B</span> BAG
+                  </button>
+                  <button type="button" class="uom-pill" [class.is-active]="getUom(product.id, product.uom) === 'CARTON'" (click)="setUom(product.id, 'CARTON')">
+                    <span class="uom-icon icon-carton">C</span> CARTON
+                  </button>
+                  <button type="button" class="uom-pill" [class.is-active]="getUom(product.id, product.uom) === 'BOX'" (click)="setUom(product.id, 'BOX')">
+                    <span class="uom-icon icon-box">B</span> BOX
+                  </button>
                 </div>
-                <ng-template #addButton>
-                  <button class="add simple-add" type="button" (click)="changeQty(product.id, 1)">ADD</button>
-                </ng-template>
+              </div>
+              <div class="actions-right">
+                <div class="price-section">
+                  <div class="price-val">{{ money(product.price) }}</div>
+                  <div class="price-uom">1 {{ getUom(product.id, product.uom) | titlecase }}</div>
+                </div>
+                <div class="stepper styled-stepper">
+                  <button type="button" (click)="decrementQty(product)">−</button>
+                  <b>{{ cart[product.id] || 0 }}</b>
+                  <button type="button" (click)="incrementQty(product)">+</button>
+                </div>
               </div>
             </div>
           </ng-container>

@@ -66,6 +66,7 @@ export class AppComponent implements OnInit, OnDestroy {
   products: Product[] = this.readProducts();
   activeCat = 'All';
   cart: Record<string, number> = {};
+  selectedUoms: Record<number, string> = {};
   search = '';
   catSearch = '';
   menuOpen = false;
@@ -197,6 +198,22 @@ export class AppComponent implements OnInit, OnDestroy {
       delete next[id];
     }
     this.cart = next;
+  }
+
+  getUom(productId: number, defaultUom: string): string {
+    return this.selectedUoms[productId] || defaultUom;
+  }
+
+  setUom(productId: number, uom: string): void {
+    this.selectedUoms[productId] = uom;
+  }
+
+  incrementQty(product: Product): void {
+    this.changeQty(product.id, 1);
+  }
+
+  decrementQty(product: Product): void {
+    this.changeQty(product.id, -1);
   }
 
   clearCart(): void {
