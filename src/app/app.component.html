@@ -34,7 +34,7 @@
       [totals]="totals" 
       [selectedUoms]="selectedUoms"
       (menuOpen)="menuOpen = true" 
-      (screenChange)="go($event)" 
+      (screenChange)="go($any($event))" 
       (setCat)="setCat($event)" 
       (setSearch)="setSearch($event)" 
       (setUom)="setUom($event)" 
@@ -50,7 +50,7 @@
       [cats]="cats" 
       [totals]="totals"
       (menuOpen)="menuOpen = true" 
-      (screenChange)="go($event)" 
+      (screenChange)="go($any($event))" 
       (setCat)="setCat($event)">
     </app-category-explorer>
 
@@ -60,7 +60,7 @@
       [logo]="logo" 
       [cartRows]="cartRows" 
       [totals]="totals"
-      (screenChange)="go($event)" 
+      (screenChange)="go($any($event))" 
       (clearCart)="clearCart()" 
       (changeQty)="changeQty($event)" 
       (removeFromCart)="removeFromCart($event)">
@@ -71,7 +71,7 @@
       [isActive]="screen === 'summary'" 
       [customer]="customer" 
       [totals]="totals"
-      (screenChange)="go($event)" 
+      (screenChange)="go($any($event))" 
       (submitOrder)="submitOrder()"
       (customerChange)="customer = $event">
     </app-order-summary-form>
@@ -80,7 +80,7 @@
       *ngIf="screen === 'orders'"
       [isActive]="screen === 'orders'" 
       [orders]="orders"
-      (screenChange)="go($event)" 
+      (screenChange)="go($any($event))" 
       (deleteOrder)="deleteOrder($event)" 
       (selectOrder)="selectedOrder = $event; go('orderDetails')">
     </app-order-history>
@@ -90,14 +90,14 @@
       [isActive]="screen === 'orderDetails'" 
       [order]="selectedOrder" 
       [demoCustomer]="demoCustomer"
-      (screenChange)="go($event)">
+      (screenChange)="go($any($event))">
     </app-order-details-view>
 
     <app-order-success 
       *ngIf="screen === 'success'"
       [isActive]="screen === 'success'" 
       [successSpans]="successSpans"
-      (screenChange)="go($event)">
+      (screenChange)="go($any($event))">
     </app-order-success>
 
     <div class="drawer-backdrop" [class.show]="menuOpen" (click)="menuOpen = false"></div>

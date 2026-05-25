@@ -13,8 +13,12 @@
     <div class="list">
       <ng-container *ngIf="filteredProducts.length; else noProducts">
         <div class="product" *ngFor="let product of filteredProducts; index as i" [style.animationDelay]="(i * 0.025) + 's'">
-          <img class="pimg" [src]="logo" alt="" />
-          <div class="pmeta">
+          
+          <div class="card-col-img">
+            <img class="pimg" [src]="logo" alt="" />
+          </div>
+
+          <div class="card-col-meta">
             <h3>{{ product.name }}</h3>
             <p>Code: {{ product.code }}</p>
             <p><b class="uom-label-blue">{{ getUom(product.id, product.uom) | lowercase }}</b> {{ product.cat }}</p>
@@ -34,7 +38,8 @@
               </button>
             </div>
           </div>
-          <div class="actions-right">
+
+          <div class="card-col-actions">
             <div class="price-section">
               <div class="price-val">{{ money(product.price) }}</div>
               <div class="price-uom">1 {{ getUom(product.id, product.uom) | titlecase }}</div>
@@ -45,6 +50,7 @@
               <button type="button" (click)="onIncrementQty(product)">+</button>
             </div>
           </div>
+          
         </div>
       </ng-container>
       <ng-template #noProducts><div class="empty">No products found.</div></ng-template>

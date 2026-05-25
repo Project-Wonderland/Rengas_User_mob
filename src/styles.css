@@ -237,23 +237,4 @@ nav.bottom-nav button.active {
   -ms-overflow-style: none !important;  /* IE and Edge */
   scrollbar-width: none !important;  /* Firefox */
 }
-
-/* --- Premium Separated Product Cards --- */
-.list {
-  background: transparent !important;
-  box-shadow: none !important;
-  border-radius: 0 !important;
-  display: flex !important;
-  flex-direction: column !important;
-  gap: 16px !important;
-  overflow: visible !important;
-}
-
-.product {
-  background-color: #ffffff !important;
-  border-radius: 16px !important;
-  padding: 16px !important;
-  border-bottom: none !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.03) !important;
-}
 
