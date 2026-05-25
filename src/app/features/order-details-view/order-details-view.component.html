@@ -1,0 +1,30 @@
+<section class="screen order-details" [class.active]="isActive">
+  <header class="appbar">
+    <button class="icon-btn" type="button" (click)="onGo('orders')">‹</button>
+    <strong>Order Details</strong>
+    <span></span>
+  </header>
+  <div class="content-pad">
+    <div class="order-detail-head">
+      <h2>{{ order?.no || 'Order' }}</h2>
+      <span class="status">{{ order?.status || 'Submitted' }}</span>
+      <p>{{ order?.date }}</p>
+      <p>{{ order?.name || demoCustomer.name }} • {{ order?.phone || demoCustomer.phone }}</p>
+    </div>
+    <div class="detail-lines">
+      <ng-container *ngIf="order?.lines?.length; else demoOrderLines">
+        <div class="detail-line" *ngFor="let line of order?.lines ?? []; let i = index" [attr.key]="line.code + '-' + i">
+          <div><b>{{ line.name }}</b><small>{{ line.code }} • {{ line.uom }}</small></div>
+          <span>{{ line.qty }} x {{ money(line.price) }}</span>
+        </div>
+      </ng-container>
+      <ng-template #demoOrderLines>
+        <div class="detail-line" *ngFor="let line of [{ name: 'Demo order items', code: order?.no || '-', uom: '-', qty: order?.items || 0, price: order?.total || 0 }]; let i = index" [attr.key]="line.code + '-' + i">
+          <div><b>{{ line.name }}</b><small>{{ line.code }} • {{ line.uom }}</small></div>
+          <span>{{ line.qty }} x {{ money(line.price) }}</span>
+        </div>
+      </ng-template>
+    </div>
+    <div class="summary-card"><p>Total Items <b>{{ order?.items || 0 }}</b></p><h2>Grand Total <span>{{ money(order?.total || 0) }}</span></h2></div>
+  </div>
+</section>

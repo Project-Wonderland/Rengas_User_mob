@@ -169,4 +169,91 @@ button{touch-action:manipulation}
 }
 .styled-stepper button {
   color: #15803d;
-}
+}
+
+/* --- Floating Bottom Navigation --- */
+nav.bottom-nav {
+  position: fixed !important;
+  left: 50% !important;
+  bottom: 24px !important;
+  transform: translateX(-50%) !important;
+  width: min(calc(100% - 40px), 400px) !important;
+  height: 72px !important;
+  background: #ffffff !important;
+  z-index: 90 !important;
+  border-radius: 36px !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08) !important;
+  display: flex !important;
+  justify-content: space-around !important;
+  align-items: center !important;
+  padding: 0 10px !important;
+  border: none !important;
+}
+
+nav.bottom-nav.hidden { 
+  display: none !important; 
+}
+
+nav.bottom-nav button {
+  position: relative !important;
+  border: 0 !important;
+  background: transparent !important;
+  color: #555555 !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 4px !important;
+  padding: 8px 12px !important;
+  border-radius: 16px !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  height: auto !important;
+  width: auto !important;
+}
+
+nav.bottom-nav i {
+  font-style: normal !important;
+  font-size: 20px !important;
+  line-height: 1 !important;
+}
+
+nav.bottom-nav button.active {
+  background: #edf3ff !important;
+  color: #0a46b3 !important;
+  font-weight: bold !important;
+  padding: 8px 16px !important;
+  border-radius: 16px !important;
+}
+
+/* --- Invisible Scrollbars --- */
+*::-webkit-scrollbar {
+  display: none !important;
+}
+
+* {
+  -ms-overflow-style: none !important;  /* IE and Edge */
+  scrollbar-width: none !important;  /* Firefox */
+}
+
+/* --- Premium Separated Product Cards --- */
+.list {
+  background: transparent !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 16px !important;
+  overflow: visible !important;
+}
+
+.product {
+  background-color: #ffffff !important;
+  border-radius: 16px !important;
+  padding: 16px !important;
+  border-bottom: none !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.03) !important;
+}
+

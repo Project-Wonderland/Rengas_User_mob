@@ -1,0 +1,11 @@
+<section class="screen success no-nav" [class.active]="isActive">
+  <div class="success-box">
+    <div class="success-burst">
+      <span *ngFor="let _ of successSpans; let index = index" [attr.key]="index"></span>
+    </div>
+    <div class="success-icon">✓</div>
+    <h2>Order Submitted Successfully</h2>
+    <p>Your order has been saved in order history.</p>
+    <button class="primary-btn" type="button" (click)="onGo('products')">Back to Products</button>
+  </div>
+</section>

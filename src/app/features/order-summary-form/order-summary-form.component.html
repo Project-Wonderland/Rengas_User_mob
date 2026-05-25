@@ -1,0 +1,15 @@
+<section class="screen summary" [class.active]="isActive">
+  <header class="appbar">
+    <button class="icon-btn" type="button" (click)="onGo('cart')">‹</button>
+    <strong>Order Summary</strong>
+    <span></span>
+  </header>
+  <div class="content-pad form-content">
+    <label>Customer Name *</label><input name="customerName" [(ngModel)]="customer.name" placeholder="Enter name" (ngModelChange)="onCustomerChange()" />
+    <label>Phone Number *</label><input name="customerPhone" [(ngModel)]="customer.phone" placeholder="Enter phone" (ngModelChange)="onCustomerChange()" />
+    <label>Address *</label><textarea name="customerAddress" [(ngModel)]="customer.address" placeholder="Enter delivery address" (ngModelChange)="onCustomerChange()"></textarea>
+    <label>Order Notes</label><textarea name="customerNotes" [(ngModel)]="customer.notes" placeholder="Write your notes here..." (ngModelChange)="onCustomerChange()"></textarea>
+    <div class="summary-card"><p>Total Items <b>{{ totals.items }}</b></p><p>Total Amount <b>{{ money(totals.total) }}</b></p><h2>Grand Total <span>{{ money(totals.total) }}</span></h2></div>
+    <button class="primary-btn bottom-action" type="button" (click)="onSubmitOrder()">SUBMIT ORDER</button>
+  </div>
+</section>

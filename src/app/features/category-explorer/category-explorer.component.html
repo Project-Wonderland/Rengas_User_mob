@@ -1,0 +1,20 @@
+<section class="screen categories" [class.active]="isActive">
+  <header class="appbar">
+    <button class="icon-btn" type="button" (click)="onMenuOpen()">☰</button>
+    <strong>Categories</strong>
+    <button class="icon-btn cart-top" type="button" (click)="onGo('cart')" aria-label="Open cart">🛒<em>{{ totals.items }}</em></button>
+  </header>
+  <div class="content-pad">
+    <div class="search"><span>🔍</span><input placeholder="Search categories..." [value]="catSearch" (input)="catSearch = $any($event.target).value" /></div>
+    <div class="category-list">
+      <ng-container *ngIf="visibleCats.length; else noCategories">
+        <button type="button" class="category-row" *ngFor="let cat of visibleCats" (click)="onSetCat(cat)">
+          <img [src]="logo" alt="" />
+          <span><b>{{ cat }} Products</b><small>{{ getProductCount(cat) }} Products</small></span>
+          <strong>›</strong>
+        </button>
+      </ng-container>
+      <ng-template #noCategories><div class="empty">No categories found.</div></ng-template>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,15 @@
+.security {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.finger-btn {
+  width: 100%;
+  height: 48px;
+  border: 1px solid #d9e4f2;
+  background: #fff;
+  color: #0051b8;
+  border-radius: 10px;
+  font-weight: 900;
+  margin-top: 10px;
+}

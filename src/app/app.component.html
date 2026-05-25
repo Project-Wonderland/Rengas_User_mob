@@ -7,240 +7,98 @@
       <div class="splash-loader"><i></i></div>
     </div>
 
-    <section class="screen security no-nav" [class.active]="screen === 'security'">
-      <div class="login-card security-card">
-        <img [src]="logo" class="login-logo" alt="RENGAS Logo" />
-        <h1>RENGAS</h1>
-        <p>Secure unlock</p>
-        <label>Password</label>
-        <input type="password" [(ngModel)]="loginPass" name="securityPass" autoComplete="current-password" />
-        <button class="primary-btn" type="button" (click)="unlockSecurity()">UNLOCK</button>
-        <button class="finger-btn" type="button" (click)="unlockSecurity()">⌾ Use Fingerprint</button>
-      </div>
-    </section>
+    <!-- Feature Components -->
+    <app-security-lock 
+      *ngIf="screen === 'security'"
+      [isActive]="screen === 'security'" 
+      [logo]="logo" 
+      (unlock)="unlockSecurity()">
+    </app-security-lock>
 
-    <section class="screen login no-nav" [class.active]="screen === 'login'">
-      <div class="login-card">
-        <img [src]="logo" class="login-logo" alt="RENGAS Logo" />
-        <h1>RENGAS</h1>
-        <p>Customer order portal</p>
-        <label>Username</label>
-        <input id="loginUser" name="loginUser" [(ngModel)]="loginUser" autoComplete="username" />
-        <label>Password</label>
-        <input id="loginPass" name="loginPass" type="password" [(ngModel)]="loginPass" autoComplete="current-password" />
-        <button class="primary-btn" type="button" (click)="login()">LOGIN</button>
-        <small class="hint">Demo: customer01 / 123456</small>
-      </div>
-    </section>
+    <app-login-portal 
+      *ngIf="screen === 'login'"
+      [isActive]="screen === 'login'" 
+      [logo]="logo" 
+      (login)="onLogin($event)">
+    </app-login-portal>
 
-    <section class="screen products" [class.active]="screen === 'products'">
-      <header class="appbar">
-        <button class="icon-btn" type="button" (click)="menuOpen = true" aria-label="Open menu">☰</button>
-        <strong>RENGAS</strong>
-        <button class="icon-btn cart-top" type="button" (click)="go('cart')" aria-label="Open cart">🛒<em>{{ totals.items }}</em></button>
-      </header>
-      <div class="content-pad">
-        <div class="search"><span>🔍</span><input type="search" placeholder="Search name / code / UOM / price..." [value]="search" (input)="setSearch($any($event.target).value)" /></div>
-        <div class="chips">
-          <button *ngFor="let cat of cats" type="button" (click)="setCat(cat)" [class.active]="activeCat === cat">{{ cat }}</button>
-        </div>
-        <div class="count-row"><b id="activeLabel">{{ activeCat === 'All' ? 'All Products' : (activeCat + ' Products') }}</b><small>{{ filteredProducts.length }} items</small></div>
-        <div class="list">
-          <ng-container *ngIf="filteredProducts.length; else noProducts">
-            <div class="product" *ngFor="let product of filteredProducts; index as i" [style.animationDelay]="(i * 0.025) + 's'">
-              <img class="pimg" [src]="logo" alt="" />
-              <div class="pmeta">
-                <h3>{{ product.name }}</h3>
-                <p>Code: {{ product.code }}</p>
-                <p><b class="uom-label-blue">{{ getUom(product.id, product.uom) | lowercase }}</b> {{ product.cat }}</p>
-                
-                <div class="uom-grid">
-                  <button type="button" class="uom-pill" [class.is-active]="getUom(product.id, product.uom) === 'KG'" (click)="setUom(product.id, 'KG')">
-                    <span class="uom-icon icon-kg">KG</span> KG
-                  </button>
-                  <button type="button" class="uom-pill" [class.is-active]="getUom(product.id, product.uom) === 'BAG'" (click)="setUom(product.id, 'BAG')">
-                    <span class="uom-icon icon-bag">B</span> BAG
-                  </button>
-                  <button type="button" class="uom-pill" [class.is-active]="getUom(product.id, product.uom) === 'CARTON'" (click)="setUom(product.id, 'CARTON')">
-                    <span class="uom-icon icon-carton">C</span> CARTON
-                  </button>
-                  <button type="button" class="uom-pill" [class.is-active]="getUom(product.id, product.uom) === 'BOX'" (click)="setUom(product.id, 'BOX')">
-                    <span class="uom-icon icon-box">B</span> BOX
-                  </button>
-                </div>
-              </div>
-              <div class="actions-right">
-                <div class="price-section">
-                  <div class="price-val">{{ money(product.price) }}</div>
-                  <div class="price-uom">1 {{ getUom(product.id, product.uom) | titlecase }}</div>
-                </div>
-                <div class="stepper styled-stepper">
-                  <button type="button" (click)="decrementQty(product)">−</button>
-                  <b>{{ cart[product.id] || 0 }}</b>
-                  <button type="button" (click)="incrementQty(product)">+</button>
-                </div>
-              </div>
-            </div>
-          </ng-container>
-          <ng-template #noProducts><div class="empty">No products found.</div></ng-template>
-        </div>
-      </div>
-    </section>
+    <app-product-catalog 
+      *ngIf="screen === 'products'"
+      [isActive]="screen === 'products'" 
+      [logo]="logo" 
+      [cats]="cats" 
+      [activeCat]="activeCat" 
+      [filteredProducts]="filteredProducts" 
+      [cart]="cart" 
+      [search]="search" 
+      [totals]="totals" 
+      [selectedUoms]="selectedUoms"
+      (menuOpen)="menuOpen = true" 
+      (screenChange)="go($event)" 
+      (setCat)="setCat($event)" 
+      (setSearch)="setSearch($event)" 
+      (setUom)="setUom($event)" 
+      (incrementQty)="incrementQty($event)" 
+      (decrementQty)="decrementQty($event)">
+    </app-product-catalog>
 
-    <section class="screen categories" [class.active]="screen === 'categories'">
-      <header class="appbar">
-        <button class="icon-btn" type="button" (click)="menuOpen = true">☰</button>
-        <strong>Categories</strong>
-        <button class="icon-btn cart-top" type="button" (click)="go('cart')" aria-label="Open cart">🛒<em>{{ totals.items }}</em></button>
-      </header>
-      <div class="content-pad">
-        <div class="search"><span>🔍</span><input placeholder="Search categories..." [value]="catSearch" (input)="catSearch = $any($event.target).value" /></div>
-        <div class="category-list">
-          <ng-container *ngIf="visibleCats.length; else noCategories">
-            <button type="button" class="category-row" *ngFor="let cat of visibleCats" (click)="setCat(cat)">
-              <img [src]="logo" alt="" />
-              <span><b>{{ cat }} Products</b><small>{{ products.filter(p => p.cat === cat).length }} Products</small></span>
-              <strong>›</strong>
-            </button>
-          </ng-container>
-          <ng-template #noCategories><div class="empty">No categories found.</div></ng-template>
-        </div>
-      </div>
-    </section>
+    <app-category-explorer 
+      *ngIf="screen === 'categories'"
+      [isActive]="screen === 'categories'" 
+      [logo]="logo" 
+      [products]="products" 
+      [cats]="cats" 
+      [totals]="totals"
+      (menuOpen)="menuOpen = true" 
+      (screenChange)="go($event)" 
+      (setCat)="setCat($event)">
+    </app-category-explorer>
 
-    <section class="screen cart" [class.active]="screen === 'cart'">
-      <header class="appbar">
-        <button class="icon-btn" type="button" (click)="go('products')">‹</button>
-        <strong>Your Cart</strong>
-        <button class="icon-btn" type="button" (click)="clearCart()" aria-label="Clear cart">⌫</button>
-      </header>
-      <div class="content-pad cart-content">
-        <div class="search cart-search"><span>🔍</span><input type="search" placeholder="Search cart items..." [value]="cartSearch" (input)="cartSearch = $any($event.target).value" /></div>
-        <div class="cart-list">
-          <ng-container *ngFor="let row of cartRows">
-            <app-swipe-delete className="cart-swipe" (delete)="removeFromCart(row.product.id)">
-              <div class="cart-item">
-                <img [src]="logo" alt="" />
-                <div class="pmeta">
-                  <h3>{{ row.product.name }}</h3>
-                  <p>{{ row.product.code }}</p>
-                  <p>{{ row.product.uom }} | {{ money(row.product.price) }}</p>
-                  <div class="stepper">
-                    <button type="button" (click)="changeQty(row.product.id, -1)">−</button>
-                    <b>{{ row.qty }}</b>
-                    <button type="button" (click)="changeQty(row.product.id, 1)">+</button>
-                  </div>
-                </div>
-                <span class="cart-price">{{ money(row.product.price * row.qty) }}</span>
-                <button class="delete" type="button" (click)="removeFromCart(row.product.id)" aria-label="Remove item">⌫</button>
-              </div>
-            </app-swipe-delete>
-          </ng-container>
-        </div>
-        <div *ngIf="!totals.items" class="empty">Cart empty. Add products first.</div>
-        <div *ngIf="totals.items > 0 && !cartRows.length" class="empty">No cart items found.</div>
-        <div class="total"><p><span>Total Items</span><b>{{ totals.items }}</b></p><p><span>Total Amount</span><b>{{ money(totals.total) }}</b></p></div>
-      </div>
-    </section>
+    <app-shopping-cart 
+      *ngIf="screen === 'cart'"
+      [isActive]="screen === 'cart'" 
+      [logo]="logo" 
+      [cartRows]="cartRows" 
+      [totals]="totals"
+      (screenChange)="go($event)" 
+      (clearCart)="clearCart()" 
+      (changeQty)="changeQty($event)" 
+      (removeFromCart)="removeFromCart($event)">
+    </app-shopping-cart>
 
-    <section class="screen summary" [class.active]="screen === 'summary'">
-      <header class="appbar">
-        <button class="icon-btn" type="button" (click)="go('cart')">‹</button>
-        <strong>Order Summary</strong>
-        <span></span>
-      </header>
-      <div class="content-pad form-content">
-        <label>Customer Name *</label><input name="customerName" [(ngModel)]="customer.name" placeholder="Enter name" />
-        <label>Phone Number *</label><input name="customerPhone" [(ngModel)]="customer.phone" placeholder="Enter phone" />
-        <label>Address *</label><textarea name="customerAddress" [(ngModel)]="customer.address" placeholder="Enter delivery address"></textarea>
-        <label>Order Notes</label><textarea name="customerNotes" [(ngModel)]="customer.notes" placeholder="Write your notes here..."></textarea>
-        <div class="summary-card"><p>Total Items <b>{{ totals.items }}</b></p><p>Total Amount <b>{{ money(totals.total) }}</b></p><h2>Grand Total <span>{{ money(totals.total) }}</span></h2></div>
-        <button class="primary-btn bottom-action" type="button" (click)="submitOrder()">SUBMIT ORDER</button>
-      </div>
-    </section>
+    <app-order-summary-form 
+      *ngIf="screen === 'summary'"
+      [isActive]="screen === 'summary'" 
+      [customer]="customer" 
+      [totals]="totals"
+      (screenChange)="go($event)" 
+      (submitOrder)="submitOrder()"
+      (customerChange)="customer = $event">
+    </app-order-summary-form>
 
-    <section class="screen orders" [class.active]="screen === 'orders'">
-      <header class="appbar">
-        <button class="icon-btn" type="button" (click)="go('products')">‹</button>
-        <strong>Order History</strong>
-        <span></span>
-      </header>
-      <div class="content-pad">
-        <div class="order-history">
-          <ng-container *ngIf="orders.length; else demoOrder">
-            <ng-container *ngFor="let order of orders">
-              <app-swipe-delete className="order-swipe" [disabled]="!orders.length" (delete)="deleteOrder(order.no)">
-                <div class="order-card compact-order" role="button" tabindex="0" (click)="selectedOrder = order; go('orderDetails')">
-                  <div>
-                    <h3>{{ order.no }}</h3>
-                    <p>{{ order.date }} • {{ order.items || 0 }} items</p>
-                  </div>
-                  <div>
-                    <b>{{ money(order.total) }}</b>
-                    <span class="status">{{ order.status }}</span>
-                  </div>
-                </div>
-              </app-swipe-delete>
-            </ng-container>
-          </ng-container>
-          <ng-template #demoOrder>
-            <div class="order-card compact-order">
-              <div>
-                <h3>RO-1007</h3>
-                <p>03/05/2026 • 7 items</p>
-              </div>
-              <div>
-                <b>{{ money(302) }}</b>
-                <span class="status">Submitted</span>
-              </div>
-            </div>
-          </ng-template>
-        </div>
-      </div>
-    </section>
+    <app-order-history 
+      *ngIf="screen === 'orders'"
+      [isActive]="screen === 'orders'" 
+      [orders]="orders"
+      (screenChange)="go($event)" 
+      (deleteOrder)="deleteOrder($event)" 
+      (selectOrder)="selectedOrder = $event; go('orderDetails')">
+    </app-order-history>
 
-    <section class="screen order-details" [class.active]="screen === 'orderDetails'">
-      <header class="appbar">
-        <button class="icon-btn" type="button" (click)="go('orders')">‹</button>
-        <strong>Order Details</strong>
-        <span></span>
-      </header>
-      <div class="content-pad">
-        <div class="order-detail-head">
-          <h2>{{ selectedOrder?.no || 'Order' }}</h2>
-          <span class="status">{{ selectedOrder?.status || 'Submitted' }}</span>
-          <p>{{ selectedOrder?.date }}</p>
-          <p>{{ selectedOrder?.name || demoCustomer.name }} • {{ selectedOrder?.phone || demoCustomer.phone }}</p>
-        </div>
-        <div class="detail-lines">
-          <ng-container *ngIf="selectedOrder?.lines?.length; else demoOrderLines">
-            <div class="detail-line" *ngFor="let line of selectedOrder?.lines ?? []; let i = index" [attr.key]="line.code + '-' + i">
-              <div><b>{{ line.name }}</b><small>{{ line.code }} • {{ line.uom }}</small></div>
-              <span>{{ line.qty }} x {{ money(line.price) }}</span>
-            </div>
-          </ng-container>
-          <ng-template #demoOrderLines>
-            <div class="detail-line" *ngFor="let line of [{ name: 'Demo order items', code: selectedOrder?.no || '-', uom: '-', qty: selectedOrder?.items || 0, price: selectedOrder?.total || 0 }]; let i = index" [attr.key]="line.code + '-' + i">
-              <div><b>{{ line.name }}</b><small>{{ line.code }} • {{ line.uom }}</small></div>
-              <span>{{ line.qty }} x {{ money(line.price) }}</span>
-            </div>
-          </ng-template>
-        </div>
-        <div class="summary-card"><p>Total Items <b>{{ selectedOrder?.items || 0 }}</b></p><h2>Grand Total <span>{{ money(selectedOrder?.total || 0) }}</span></h2></div>
-      </div>
-    </section>
+    <app-order-details-view 
+      *ngIf="screen === 'orderDetails'"
+      [isActive]="screen === 'orderDetails'" 
+      [order]="selectedOrder" 
+      [demoCustomer]="demoCustomer"
+      (screenChange)="go($event)">
+    </app-order-details-view>
 
-    <section class="screen success no-nav" [class.active]="screen === 'success'">
-      <div class="success-box">
-        <div class="success-burst">
-          <span *ngFor="let _ of successSpans; let index = index" [attr.key]="index"></span>
-        </div>
-        <div class="success-icon">✓</div>
-        <h2>Order Submitted Successfully</h2>
-        <p>Your order has been saved in order history.</p>
-        <button class="primary-btn" type="button" (click)="go('products')">Back to Products</button>
-      </div>
-    </section>
+    <app-order-success 
+      *ngIf="screen === 'success'"
+      [isActive]="screen === 'success'" 
+      [successSpans]="successSpans"
+      (screenChange)="go($event)">
+    </app-order-success>
 
     <div class="drawer-backdrop" [class.show]="menuOpen" (click)="menuOpen = false"></div>
     <aside class="side-menu" [class.show]="menuOpen">

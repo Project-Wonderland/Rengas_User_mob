@@ -2,88 +2,77 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { App as CapacitorApp } from '@capacitor/app';
-import { SwipeDeleteComponent } from './swipe-delete.component';
 
-const storageKey = 'renga_mobile_orders_v1';
+import { SecurityLockComponent } from './features/security-lock/security-lock.component';
+import { LoginPortalComponent } from './features/login-portal/login-portal.component';
+import { ProductCatalogComponent, Product } from './features/product-catalog/product-catalog.component';
+import { CategoryExplorerComponent } from './features/category-explorer/category-explorer.component';
+import { ShoppingCartComponent } from './features/shopping-cart/shopping-cart.component';
+import { OrderSummaryFormComponent, Customer } from './features/order-summary-form/order-summary-form.component';
+import { OrderHistoryComponent, Order, OrderLine } from './features/order-history/order-history.component';
+import { OrderDetailsViewComponent } from './features/order-details-view/order-details-view.component';
+import { OrderSuccessComponent } from './features/order-success/order-success.component';
+
+import { DataService } from './services/data.service';
+
 const securityKey = 'rengas_security_enabled';
-
-interface Product {
-  id: number;
-  cat: string;
-  name: string;
-  code: string;
-  uom: string;
-  price: number;
-}
-
-interface Customer {
-  name: string;
-  phone: string;
-  address: string;
-  notes: string;
-}
-
-interface OrderLine {
-  id: string;
-  qty: number;
-  name: string;
-  code: string;
-  uom: string;
-  price: number;
-}
-
-interface Order {
-  no: string;
-  date: string;
-  items: number;
-  total: number;
-  status: string;
-  lines: OrderLine[];
-  name: string;
-  phone: string;
-  address: string;
-  notes: string;
-}
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, FormsModule, SwipeDeleteComponent],
+  imports: [
+    CommonModule, 
+    FormsModule, 
+    SecurityLockComponent,
+    LoginPortalComponent,
+    ProductCatalogComponent,
+    CategoryExplorerComponent,
+    ShoppingCartComponent,
+    OrderSummaryFormComponent,
+    OrderHistoryComponent,
+    OrderDetailsViewComponent,
+    OrderSuccessComponent
+  ],
   templateUrl: './app.component.html'
 })
 export class AppComponent implements OnInit, OnDestroy {
-  readonly demoCustomer: Customer = {
-    name: 'Demo Customer',
-    phone: '0123456789',
-    address: 'No. 12, Jalan Demo, Kuala Lumpur',
-    notes: 'Demo order'
-  };
+  demoCustomer!: Customer;
 
   logo = '/logo.png';
   orderSuccessSound = '/order-success.mp3';
   screen = localStorage.getItem(securityKey) === '1' ? 'security' : 'login';
   showSplash = true;
-  products: Product[] = this.readProducts();
+  products: Product[] = [];
   activeCat = 'All';
   cart: Record<string, number> = {};
   selectedUoms: Record<number, string> = {};
   search = '';
-  catSearch = '';
   menuOpen = false;
-  orders: Order[] = this.readOrders();
-  customer: Customer = { ...this.demoCustomer };
-  cartSearch = '';
+  orders: Order[] = [];
+  customer: Customer = { name: '', phone: '', address: '', notes: '' };
   selectedOrder: Order | null = null;
   confirmLogout = false;
   securityEnabled = localStorage.getItem(securityKey) === '1';
-  loginUser = 'customer01';
-  loginPass = '123456';
   backButtonHandle: { remove(): void } | null = null;
-  successSpans = Array.from({ length: 18 });
+  successSpans: number[] = Array.from({ length: 18 }).map((_, i) => i);
+
+  constructor(private dataService: DataService) {
+    this.demoCustomer = this.dataService.getDemoCustomer();
+    this.customer = { ...this.demoCustomer };
+  }
 
   ngOnInit(): void {
     window.setTimeout(() => this.showSplash = false, 1800);
     this.registerBackButton();
+    
+    // Fetch data using Observables
+    this.dataService.getProducts().subscribe(products => {
+      this.products = products;
+    });
+    
+    this.dataService.getOrders().subscribe(orders => {
+      this.orders = orders;
+    });
   }
 
   ngOnDestroy(): void {
@@ -114,16 +103,10 @@ export class AppComponent implements OnInit, OnDestroy {
     };
   }
 
-  get visibleCats(): string[] {
-    return this.cats.filter(cat => cat !== 'All' && cat.toLowerCase().includes(this.catSearch.toLowerCase()));
-  }
-
   get cartRows(): Array<{ product: Product; qty: number }> {
-    const q = this.cartSearch.toLowerCase();
     return Object.entries(this.cart)
       .map(([id, qty]) => ({ product: this.products.find(p => String(p.id) === String(id)), qty }))
-      .filter((row): row is { product: Product; qty: number } => Boolean(row.product))
-      .filter(row => `${row.product.name} ${row.product.code} ${row.product.uom}`.toLowerCase().includes(q));
+      .filter((row): row is { product: Product; qty: number } => Boolean(row.product));
   }
 
   go(name: string): void {
@@ -153,9 +136,9 @@ export class AppComponent implements OnInit, OnDestroy {
     });
   }
 
-  login(): void {
-    const user = this.loginUser.trim();
-    const pass = this.loginPass;
+  onLogin(credentials: {user: string, pass: string}): void {
+    const user = credentials.user.trim();
+    const pass = credentials.pass;
     if (user !== 'customer01' || pass !== '123456') {
       alert('Invalid username or password.');
       return;
@@ -189,7 +172,8 @@ export class AppComponent implements OnInit, OnDestroy {
     }
   }
 
-  changeQty(id: number, delta: number): void {
+  changeQty(data: {id: number, delta: number}): void {
+    const {id, delta} = data;
     const nextQty = Math.max(0, (this.cart[id] || 0) + delta);
     const next = { ...this.cart };
     if (nextQty) {
@@ -200,20 +184,16 @@ export class AppComponent implements OnInit, OnDestroy {
     this.cart = next;
   }
 
-  getUom(productId: number, defaultUom: string): string {
-    return this.selectedUoms[productId] || defaultUom;
-  }
-
-  setUom(productId: number, uom: string): void {
-    this.selectedUoms[productId] = uom;
+  setUom(data: {id: number, uom: string}): void {
+    this.selectedUoms[data.id] = data.uom;
   }
 
   incrementQty(product: Product): void {
-    this.changeQty(product.id, 1);
+    this.changeQty({id: product.id, delta: 1});
   }
 
   decrementQty(product: Product): void {
-    this.changeQty(product.id, -1);
+    this.changeQty({id: product.id, delta: -1});
   }
 
   clearCart(): void {
@@ -228,8 +208,11 @@ export class AppComponent implements OnInit, OnDestroy {
 
   deleteOrder(orderNo: string): void {
     const nextOrders = this.orders.filter(order => order.no !== orderNo);
-    localStorage.setItem(storageKey, JSON.stringify(nextOrders));
-    this.orders = nextOrders;
+    this.dataService.saveOrders(nextOrders).subscribe(success => {
+      if (success) {
+        this.orders = nextOrders;
+      }
+    });
   }
 
   submitOrder(): void {
@@ -264,60 +247,20 @@ export class AppComponent implements OnInit, OnDestroy {
       },
       ...this.orders
     ];
-    localStorage.setItem(storageKey, JSON.stringify(nextOrders));
-    this.playSuccessSound();
-    this.orders = nextOrders;
-    this.cart = {};
-    this.customer = { ...this.demoCustomer };
-    this.go('success');
+    
+    this.dataService.saveOrders(nextOrders).subscribe(success => {
+      if (success) {
+        this.playSuccessSound();
+        this.orders = nextOrders;
+        this.cart = {};
+        this.customer = { ...this.demoCustomer };
+        this.go('success');
+      }
+    });
   }
 
   money(value: number): string {
     return `RM ${Number(value || 0).toFixed(2)}`;
-  }
-
-  private readProducts(): Product[] {
-    try {
-      const sync = localStorage.getItem('rengaCatalogueProducts');
-      const parsed = sync ? JSON.parse(sync) : null;
-      if (Array.isArray(parsed) && parsed.length) {
-        return parsed.map((p: any, index: number) => ({
-          id: index + 1,
-          cat: p.cat || p.category || 'All',
-          name: p.name || p.product_name || 'Product',
-          code: p.code || p.item_code || '-',
-          uom: p.uom || p.UOM || '-',
-          price: Number(p.price || p.rate || 0)
-        }));
-      }
-    } catch {
-      return this.defaultProducts();
-    }
-    return this.defaultProducts();
-  }
-
-  private readOrders(): Order[] {
-    try {
-      const orders = JSON.parse(localStorage.getItem(storageKey) || '[]');
-      return Array.isArray(orders) ? orders : [];
-    } catch {
-      return [];
-    }
-  }
-
-  private defaultProducts(): Product[] {
-    return [
-      { id: 1, cat: 'Vilaku', name: "AGAL VILAKU WHITE (S) 500'S", code: 'AGW5444444444444443', uom: 'BOX', price: 50 },
-      { id: 2, cat: 'Vilaku', name: "AGAL VILAKU WITH WAX 4'S", code: 'AGW5444444444444444', uom: 'BOX', price: 45 },
-      { id: 3, cat: 'Vilaku', name: "POT VILAKKU 7'S MIX", code: 'PVKM544444444444445', uom: 'PACK', price: 60 },
-      { id: 4, cat: 'Camphor', name: 'CAMPHOR (100 GMS)', code: 'CAM1005444444444446', uom: 'BOX', price: 15 },
-      { id: 5, cat: 'Incense', name: 'INCENSE STICKS (CYCLE)', code: 'INCYC5444444444447', uom: 'BOX', price: 8.5 },
-      { id: 6, cat: 'Oil', name: 'POOJA OIL 1 LTR', code: 'OIL1L5444444444448', uom: 'BOTTLE', price: 12 },
-      { id: 7, cat: 'Deepam', name: 'KUBERA DEEPAM', code: 'KUB5444444444449', uom: 'PCS', price: 18 },
-      { id: 8, cat: 'Brass', name: 'BRASS VILAKU BIG', code: 'BRV5444444444450', uom: 'PCS', price: 85 },
-      { id: 9, cat: 'Grocery', name: 'ISPAHANI PORI 400GM', code: 'ISP4005444444444451', uom: 'PKT', price: 6.8 },
-      { id: 10, cat: 'Grocery', name: 'ROSE WATER 300ML', code: 'RW3005444444444452', uom: 'BOTTLE', price: 5.2 }
-    ];
   }
 
   private playSuccessSound(): void {

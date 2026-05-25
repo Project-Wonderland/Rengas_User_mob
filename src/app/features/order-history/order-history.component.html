@@ -1,0 +1,39 @@
+<section class="screen orders" [class.active]="isActive">
+  <header class="appbar">
+    <button class="icon-btn" type="button" (click)="onGo('products')">‹</button>
+    <strong>Order History</strong>
+    <span></span>
+  </header>
+  <div class="content-pad">
+    <div class="order-history">
+      <ng-container *ngIf="orders.length; else demoOrder">
+        <ng-container *ngFor="let order of orders">
+          <app-swipe-delete className="order-swipe" [disabled]="!orders.length" (delete)="onDeleteOrder(order.no)">
+            <div class="order-card compact-order" role="button" tabindex="0" (click)="onSelectOrder(order)">
+              <div>
+                <h3>{{ order.no }}</h3>
+                <p>{{ order.date }} • {{ order.items || 0 }} items</p>
+              </div>
+              <div>
+                <b>{{ money(order.total) }}</b>
+                <span class="status">{{ order.status }}</span>
+              </div>
+            </div>
+          </app-swipe-delete>
+        </ng-container>
+      </ng-container>
+      <ng-template #demoOrder>
+        <div class="order-card compact-order">
+          <div>
+            <h3>RO-1007</h3>
+            <p>03/05/2026 • 7 items</p>
+          </div>
+          <div>
+            <b>{{ money(302) }}</b>
+            <span class="status">Submitted</span>
+          </div>
+        </div>
+      </ng-template>
+    </div>
+  </div>
+</section>

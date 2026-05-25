@@ -1,0 +1,34 @@
+<section class="screen cart" [class.active]="isActive">
+  <header class="appbar">
+    <button class="icon-btn" type="button" (click)="onGo('products')">‹</button>
+    <strong>Your Cart</strong>
+    <button class="icon-btn" type="button" (click)="onClearCart()" aria-label="Clear cart">⌫</button>
+  </header>
+  <div class="content-pad cart-content">
+    <div class="search cart-search"><span>🔍</span><input type="search" placeholder="Search cart items..." [value]="cartSearch" (input)="cartSearch = $any($event.target).value" /></div>
+    <div class="cart-list">
+      <ng-container *ngFor="let row of filteredCartRows">
+        <app-swipe-delete className="cart-swipe" (delete)="onRemoveFromCart(row.product.id)">
+          <div class="cart-item">
+            <img [src]="logo" alt="" />
+            <div class="pmeta">
+              <h3>{{ row.product.name }}</h3>
+              <p>{{ row.product.code }}</p>
+              <p>{{ row.product.uom }} | {{ money(row.product.price) }}</p>
+              <div class="stepper">
+                <button type="button" (click)="onChangeQty(row.product.id, -1)">−</button>
+                <b>{{ row.qty }}</b>
+                <button type="button" (click)="onChangeQty(row.product.id, 1)">+</button>
+              </div>
+            </div>
+            <span class="cart-price">{{ money(row.product.price * row.qty) }}</span>
+            <button class="delete" type="button" (click)="onRemoveFromCart(row.product.id)" aria-label="Remove item">⌫</button>
+          </div>
+        </app-swipe-delete>
+      </ng-container>
+    </div>
+    <div *ngIf="!totals.items" class="empty">Cart empty. Add products first.</div>
+    <div *ngIf="totals.items > 0 && !filteredCartRows.length" class="empty">No cart items found.</div>
+    <div class="total"><p><span>Total Items</span><b>{{ totals.items }}</b></p><p><span>Total Amount</span><b>{{ money(totals.total) }}</b></p></div>
+  </div>
+</section>

@@ -1,0 +1,11 @@
+<section class="screen security no-nav" [class.active]="isActive">
+  <div class="login-card security-card">
+    <img [src]="logo" class="login-logo" alt="RENGAS Logo" />
+    <h1>RENGAS</h1>
+    <p>Secure unlock</p>
+    <label>Password</label>
+    <input type="password" [(ngModel)]="loginPass" name="securityPass" autoComplete="current-password" />
+    <button class="primary-btn" type="button" (click)="onUnlock()">UNLOCK</button>
+    <button class="finger-btn" type="button" (click)="onUnlock()">⌾ Use Fingerprint</button>
+  </div>
+</section>

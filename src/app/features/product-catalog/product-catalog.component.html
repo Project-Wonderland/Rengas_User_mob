@@ -1,0 +1,53 @@
+<section class="screen products" [class.active]="isActive">
+  <header class="appbar">
+    <button class="icon-btn" type="button" (click)="onMenuOpen()" aria-label="Open menu">☰</button>
+    <strong>RENGAS</strong>
+    <button class="icon-btn cart-top" type="button" (click)="onGo('cart')" aria-label="Open cart">🛒<em>{{ totals.items }}</em></button>
+  </header>
+  <div class="content-pad">
+    <div class="search"><span>🔍</span><input type="search" placeholder="Search name / code / UOM / price..." [value]="search" (input)="onSetSearch($any($event.target).value)" /></div>
+    <div class="chips">
+      <button *ngFor="let cat of cats" type="button" (click)="onSetCat(cat)" [class.active]="activeCat === cat">{{ cat }}</button>
+    </div>
+    <div class="count-row"><b id="activeLabel">{{ activeCat === 'All' ? 'All Products' : (activeCat + ' Products') }}</b><small>{{ filteredProducts.length }} items</small></div>
+    <div class="list">
+      <ng-container *ngIf="filteredProducts.length; else noProducts">
+        <div class="product" *ngFor="let product of filteredProducts; index as i" [style.animationDelay]="(i * 0.025) + 's'">
+          <img class="pimg" [src]="logo" alt="" />
+          <div class="pmeta">
+            <h3>{{ product.name }}</h3>
+            <p>Code: {{ product.code }}</p>
+            <p><b class="uom-label-blue">{{ getUom(product.id, product.uom) | lowercase }}</b> {{ product.cat }}</p>
+            
+            <div class="uom-grid">
+              <button type="button" class="uom-pill" [class.is-active]="getUom(product.id, product.uom) === 'KG'" (click)="onSetUom(product.id, 'KG')">
+                <span class="uom-icon icon-kg">KG</span> KG
+              </button>
+              <button type="button" class="uom-pill" [class.is-active]="getUom(product.id, product.uom) === 'BAG'" (click)="onSetUom(product.id, 'BAG')">
+                <span class="uom-icon icon-bag">B</span> BAG
+              </button>
+              <button type="button" class="uom-pill" [class.is-active]="getUom(product.id, product.uom) === 'CARTON'" (click)="onSetUom(product.id, 'CARTON')">
+                <span class="uom-icon icon-carton">C</span> CARTON
+              </button>
+              <button type="button" class="uom-pill" [class.is-active]="getUom(product.id, product.uom) === 'BOX'" (click)="onSetUom(product.id, 'BOX')">
+                <span class="uom-icon icon-box">B</span> BOX
+              </button>
+            </div>
+          </div>
+          <div class="actions-right">
+            <div class="price-section">
+              <div class="price-val">{{ money(product.price) }}</div>
+              <div class="price-uom">1 {{ getUom(product.id, product.uom) | titlecase }}</div>
+            </div>
+            <div class="stepper styled-stepper">
+              <button type="button" (click)="onDecrementQty(product)">−</button>
+              <b>{{ cart[product.id] || 0 }}</b>
+              <button type="button" (click)="onIncrementQty(product)">+</button>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+      <ng-template #noProducts><div class="empty">No products found.</div></ng-template>
+    </div>
+  </div>
+</section>
