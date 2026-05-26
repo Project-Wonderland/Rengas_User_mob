@@ -1,6 +1,85 @@
 .cart-content{padding-bottom:260px}
 .cart-search{margin-bottom:12px}
-.cart-item{display:grid;grid-template-columns:58px minmax(0,1fr) 72px 30px;gap:10px;align-items:center;background:#fff;border:1px solid #e8eef7;border-radius:12px;padding:10px;margin-bottom:10px}
-.cart-item img{width:54px;height:54px;border-radius:50%;object-fit:contain}
-.cart-price{text-align:right;font-weight:900;color:#0051b8;font-size:13px}
-.delete{width:30px;height:30px;border-radius:10px;display:grid;place-items:center;background:#fff1f2;color:#e11d48;font-size:17px;font-weight:900;border:0}
+
+/* Eliminate Background Bleeding & Harsh Edges */
+.cart-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: stretch;
+  background-color: #ffffff;
+  border-radius: 16px;
+  padding: 14px;
+  margin-bottom: 16px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+  position: relative;
+  overflow: hidden;
+  border: none;
+}
+
+/* Implement a Balanced 3-Column Layout */
+.card-col-img {
+  flex: 0 0 44px;
+}
+
+.card-col-img img {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: contain;
+}
+
+.card-col-meta {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* Multi-Line Text Wrapping Constraints */
+.card-col-meta h3 {
+  font-size: 13px;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0;
+  line-height: 1.3;
+}
+
+.card-col-meta p {
+  font-size: 11px;
+  color: #64748b;
+  margin: 0;
+}
+
+.card-col-actions {
+  flex: 0 0 110px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+/* Symmetrical Total Pricing Block */
+.cart-price {
+  font-size: 16px;
+  font-weight: 800;
+  color: #0a46b3;
+  text-align: right;
+  line-height: 1.2;
+}
+
+/* Modernize the Action/Delete Control Button */
+.delete {
+  background: #fff1f2;
+  border-radius: 50%;
+  color: #e11d48;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  font-size: 16px;
+  font-weight: 900;
+  flex-shrink: 0;
+}

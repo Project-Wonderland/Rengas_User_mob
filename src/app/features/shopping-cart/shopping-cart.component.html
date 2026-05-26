@@ -10,8 +10,10 @@
       <ng-container *ngFor="let row of filteredCartRows">
         <app-swipe-delete className="cart-swipe" (delete)="onRemoveFromCart(row.product.id)">
           <div class="cart-item">
-            <img [src]="logo" alt="" />
-            <div class="pmeta">
+            <div class="card-col-img">
+              <img [src]="logo" alt="" />
+            </div>
+            <div class="card-col-meta">
               <h3>{{ row.product.name }}</h3>
               <p>{{ row.product.code }}</p>
               <p>{{ row.product.uom }} | {{ money(row.product.price) }}</p>
@@ -21,8 +23,10 @@
                 <button type="button" (click)="onChangeQty(row.product.id, 1)">+</button>
               </div>
             </div>
-            <span class="cart-price">{{ money(row.product.price * row.qty) }}</span>
-            <button class="delete" type="button" (click)="onRemoveFromCart(row.product.id)" aria-label="Remove item">⌫</button>
+            <div class="card-col-actions">
+              <span class="cart-price">{{ money(row.product.price * row.qty) }}</span>
+              <button class="delete" type="button" (click)="onRemoveFromCart(row.product.id)" aria-label="Remove item">⌫</button>
+            </div>
           </div>
         </app-swipe-delete>
       </ng-container>

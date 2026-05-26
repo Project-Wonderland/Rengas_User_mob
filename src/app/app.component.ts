@@ -38,8 +38,8 @@ const securityKey = 'rengas_security_enabled';
 export class AppComponent implements OnInit, OnDestroy {
   demoCustomer!: Customer;
 
-  logo = '/logo.png';
-  orderSuccessSound = '/order-success.mp3';
+  logo = 'logo.png';
+  orderSuccessSound = 'order-success.mp3';
   screen = localStorage.getItem(securityKey) === '1' ? 'security' : 'login';
   showSplash = true;
   products: Product[] = [];
