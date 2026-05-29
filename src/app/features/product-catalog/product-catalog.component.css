@@ -144,9 +144,9 @@
 .uom-pill.is-active .uom-icon { background: #15803d; }
 
 .card-col-actions {
-  flex: 0 0 115px;
+  flex: 0 0 95px;
   border-left: 1px solid #e2e8f0;
-  padding-left: 12px;
+  padding-left: 8px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -159,14 +159,14 @@
 .price-uom { font-size: 11px; color: #64748b; margin-top: 2px; margin-bottom: 12px; }
 
 .styled-stepper { border-radius: 8px; border: 1px solid #dce4ef; background: #fff; box-shadow: none; display: flex; align-items: center; }
-.styled-stepper button { color: #15803d; width: 32px; height: 32px; font-weight: 900; background: transparent; border: 0; }
-.styled-stepper b { width: 26px; text-align: center; font-size: 14px; }
+.styled-stepper button { color: #15803d; width: 28px; height: 28px; font-weight: 900; background: transparent; border: 0; font-size: 16px; }
+.styled-stepper b { width: 22px; text-align: center; font-size: 14px; }
 
 @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 @media(max-width:360px){
   .card-col-meta h3{font-size:12px}
   .card-col-meta p{font-size:10px}
   .chips button{min-width:70px;padding:0 15px}
-  .card-col-actions { flex: 0 0 100px; padding-left: 10px; }
+  .card-col-actions { flex: 0 0 85px; padding-left: 6px; }
   .uom-pill { font-size: 8px; padding: 4px; }
 }
