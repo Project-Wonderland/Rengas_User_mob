@@ -5,7 +5,7 @@ import { App as CapacitorApp } from '@capacitor/app';
 
 import { SecurityLockComponent } from './features/security-lock/security-lock.component';
 import { LoginPortalComponent } from './features/login-portal/login-portal.component';
-import { ProductCatalogComponent, Product } from './features/product-catalog/product-catalog.component';
+import { ProductCatalogComponent, Product, Variant } from './features/product-catalog/product-catalog.component';
 import { CategoryExplorerComponent } from './features/category-explorer/category-explorer.component';
 import { ShoppingCartComponent } from './features/shopping-cart/shopping-cart.component';
 import { OrderSummaryFormComponent, Customer } from './features/order-summary-form/order-summary-form.component';
@@ -44,8 +44,8 @@ export class AppComponent implements OnInit, OnDestroy {
   showSplash = true;
   products: Product[] = [];
   activeCat = 'All';
-  cart: Record<string, number> = {};
-  selectedUoms: Record<number, string> = {};
+  cart: Record<string, number> = {}; // key is variant sku
+  selectedVariants: Record<number, string> = {};
   search = '';
   menuOpen = false;
   orders: Order[] = [];
@@ -80,14 +80,14 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   get cats(): string[] {
-    return ['All', ...new Set(this.products.map(p => p.cat || 'All'))];
+    return ['All', ...new Set(this.products.map(p => p.categoryName || 'All'))];
   }
 
   get filteredProducts(): Product[] {
     const q = this.search.toLowerCase();
     return this.products.filter(p => {
-      const inCat = this.activeCat === 'All' || p.cat === this.activeCat;
-      const text = `${p.name} ${p.code} ${p.uom} ${p.price} ${p.cat}`.toLowerCase();
+      const inCat = this.activeCat === 'All' || p.categoryName === this.activeCat;
+      const text = `${p.productName} ${p.categoryName} ${p.variants.map(v => v.sku + ' ' + v.uomLabel + ' ' + v.sellingPrice).join(' ')}`.toLowerCase();
       return inCat && text.includes(q);
     });
   }
@@ -96,17 +96,33 @@ export class AppComponent implements OnInit, OnDestroy {
     const entries = Object.entries(this.cart);
     return {
       items: entries.reduce((sum, [, qty]) => sum + qty, 0),
-      total: entries.reduce((sum, [id, qty]) => {
-        const product = this.products.find(p => String(p.id) === String(id));
-        return sum + (product?.price || 0) * qty;
+      total: entries.reduce((sum, [sku, qty]) => {
+        let price = 0;
+        this.products.forEach(p => {
+          const v = p.variants.find(va => va.sku === sku);
+          if (v) price = v.sellingPrice;
+        });
+        return sum + (price * qty);
       }, 0)
     };
   }
 
-  get cartRows(): Array<{ product: Product; qty: number }> {
+  get cartRows(): Array<{ product: Product; variant: Variant; qty: number }> {
     return Object.entries(this.cart)
-      .map(([id, qty]) => ({ product: this.products.find(p => String(p.id) === String(id)), qty }))
-      .filter((row): row is { product: Product; qty: number } => Boolean(row.product));
+      .map(([sku, qty]) => {
+        let product!: Product;
+        let variant!: Variant;
+        for (const p of this.products) {
+          const v = p.variants.find(va => va.sku === sku);
+          if (v) {
+            product = p;
+            variant = v;
+            break;
+          }
+        }
+        return { product, variant, qty };
+      })
+      .filter((row): row is { product: Product; variant: Variant; qty: number } => Boolean(row.product && row.variant));
   }
 
   go(name: string): void {
@@ -172,37 +188,37 @@ export class AppComponent implements OnInit, OnDestroy {
     }
   }
 
-  changeQty(data: {id: number, delta: number}): void {
-    const {id, delta} = data;
-    const nextQty = Math.max(0, (this.cart[id] || 0) + delta);
+  selectVariant(data: {productId: number, sku: string}): void {
+    this.selectedVariants[data.productId] = data.sku;
+  }
+
+  changeQty(data: {sku: string, delta: number}): void {
+    const {sku, delta} = data;
+    const nextQty = Math.max(0, (this.cart[sku] || 0) + delta);
     const next = { ...this.cart };
     if (nextQty) {
-      next[id] = nextQty;
+      next[sku] = nextQty;
     } else {
-      delete next[id];
+      delete next[sku];
     }
     this.cart = next;
   }
 
-  setUom(data: {id: number, uom: string}): void {
-    this.selectedUoms[data.id] = data.uom;
+  incrementQty(sku: string): void {
+    this.changeQty({sku, delta: 1});
   }
 
-  incrementQty(product: Product): void {
-    this.changeQty({id: product.id, delta: 1});
-  }
-
-  decrementQty(product: Product): void {
-    this.changeQty({id: product.id, delta: -1});
+  decrementQty(sku: string): void {
+    this.changeQty({sku, delta: -1});
   }
 
   clearCart(): void {
     this.cart = {};
   }
 
-  removeFromCart(id: number): void {
+  removeFromCart(sku: string): void {
     const next = { ...this.cart };
-    delete next[id];
+    delete next[sku];
     this.cart = next;
   }
 
@@ -232,15 +248,27 @@ export class AppComponent implements OnInit, OnDestroy {
         items: this.totals.items,
         total: this.totals.total,
         status: 'Submitted',
-        lines: Object.entries(this.cart).map(([id, qty]) => {
-          const product = this.products.find(p => String(p.id) === String(id));
+        lines: Object.entries(this.cart).map(([sku, qty]) => {
+          let pName = 'Product';
+          let vCode = sku;
+          let vUom = '-';
+          let vPrice = 0;
+          for (const p of this.products) {
+            const v = p.variants.find(va => va.sku === sku);
+            if (v) {
+              pName = p.productName;
+              vUom = v.uomLabel;
+              vPrice = v.sellingPrice;
+              break;
+            }
+          }
           return {
-            id,
+            id: sku,
             qty,
-            name: product?.name || 'Product',
-            code: product?.code || '-',
-            uom: product?.uom || '-',
-            price: product?.price || 0
+            name: pName,
+            code: vCode,
+            uom: vUom,
+            price: vPrice
           };
         }),
         ...this.customer

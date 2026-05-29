@@ -14,7 +14,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
       (touchstart)="begin($any($event.touches)[0].clientX)"
       (touchmove)="move($any($event.touches)[0].clientX)"
       (touchend)="end()"
-    >
+    > 
       <button class="swipe-delete" type="button" (click)="delete.emit()">Delete</button>
       <div class="swipe-content" [style.transform]="transform"> <ng-content></ng-content> </div>
     </div>

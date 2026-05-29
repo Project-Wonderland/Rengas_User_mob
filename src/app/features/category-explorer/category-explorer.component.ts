@@ -26,7 +26,7 @@ export class CategoryExplorerComponent {
   }
 
   getProductCount(cat: string): number {
-    return this.products.filter(p => p.cat === cat).length;
+    return this.products.filter(p => p.categoryName === cat).length;
   }
 
   onMenuOpen(): void { this.menuOpen.emit(); }

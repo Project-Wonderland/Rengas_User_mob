@@ -8,24 +8,24 @@
     <div class="search cart-search"><span>🔍</span><input type="search" placeholder="Search cart items..." [value]="cartSearch" (input)="cartSearch = $any($event.target).value" /></div>
     <div class="cart-list">
       <ng-container *ngFor="let row of filteredCartRows">
-        <app-swipe-delete className="cart-swipe" (delete)="onRemoveFromCart(row.product.id)">
+        <app-swipe-delete className="cart-swipe" (delete)="onRemoveFromCart(row.variant.sku)">
           <div class="cart-item">
             <div class="card-col-img">
               <img [src]="logo" alt="" />
             </div>
             <div class="card-col-meta">
-              <h3>{{ row.product.name }}</h3>
-              <p>{{ row.product.code }}</p>
-              <p>{{ row.product.uom }} | {{ money(row.product.price) }}</p>
+              <h3>{{ row.product.productName }}</h3>
+              <p>{{ row.variant.sku }}</p>
+              <p>{{ row.variant.uomLabel }} | {{ money(row.variant.sellingPrice) }}</p>
               <div class="stepper">
-                <button type="button" (click)="onChangeQty(row.product.id, -1)">−</button>
+                <button type="button" (click)="onChangeQty(row.variant.sku, -1)">−</button>
                 <b>{{ row.qty }}</b>
-                <button type="button" (click)="onChangeQty(row.product.id, 1)">+</button>
+                <button type="button" (click)="onChangeQty(row.variant.sku, 1)">+</button>
               </div>
             </div>
             <div class="card-col-actions">
-              <span class="cart-price">{{ money(row.product.price * row.qty) }}</span>
-              <button class="delete" type="button" (click)="onRemoveFromCart(row.product.id)" aria-label="Remove item">⌫</button>
+              <span class="cart-price">{{ money(row.variant.sellingPrice * row.qty) }}</span>
+              <button class="delete" type="button" (click)="onRemoveFromCart(row.variant.sku)" aria-label="Remove item">⌫</button>
             </div>
           </div>
         </app-swipe-delete>

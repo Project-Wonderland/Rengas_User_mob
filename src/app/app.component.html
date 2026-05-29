@@ -32,12 +32,12 @@
       [cart]="cart" 
       [search]="search" 
       [totals]="totals" 
-      [selectedUoms]="selectedUoms"
+      [selectedVariants]="selectedVariants"
       (menuOpen)="menuOpen = true" 
       (screenChange)="go($any($event))" 
       (setCat)="setCat($event)" 
       (setSearch)="setSearch($event)" 
-      (setUom)="setUom($event)" 
+      (selectVariant)="selectVariant($event)" 
       (incrementQty)="incrementQty($event)" 
       (decrementQty)="decrementQty($event)">
     </app-product-catalog>
